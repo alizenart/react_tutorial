@@ -1,21 +1,13 @@
 import React from 'react';
+import Course from './Course.jsx';
+import './CourseList.css';
 
-const CourseList = ({ courses }) => {
-  return (
-    <div>
-      <h2>Course List</h2>
-      <ul>
-        {Object.keys(courses).map((courseId) => (
-          <li key={courseId}>
-            <h3>{courses[courseId].title}</h3>
-            <p>
-              {courses[courseId].term} {courses[courseId].number} - {courses[courseId].meets}
-            </p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+const CourseList = ({ courses }) => (
+  <div className="course-list d-flex flex-wrap justify-content-center">
+    {Object.keys(courses).map((courseId) => (
+      <Course key={courseId} course={courses[courseId]} />
+    ))}
+  </div>
+);
 
 export default CourseList;

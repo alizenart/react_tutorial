@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "react-tutorial-35db6"
-  }
+    "default": "react-tutorial-35db6",
+    "react-tutorial-35db6": "react-tutorial-35db6"
+  },
+  "targets": {},
+  "etags": {}
 }

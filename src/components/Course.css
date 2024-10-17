@@ -4,3 +4,11 @@
     border: 2px solid green;
   }
   
+.conflict {
+  border: 2px solid red;
+}
+
+.conflict-warning {
+  color: red;
+  font-weight: bold;
+}

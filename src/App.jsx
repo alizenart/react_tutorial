@@ -18,13 +18,15 @@ const App = () => {
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
   
-  const toggleSelectedCourse = (courseId) => {
-    setSelectedCourses(
-      selectedCourses.includes(courseId)
-      ? selectedCourses.filter(id => id !== courseId)
-      : [...selectedCourses, courseId]
+  const toggleSelectedCourse = (course) => {
+    setSelectedCourses((prevSelected) =>
+      prevSelected.includes(course)
+        ? prevSelected.filter(c => c !== course) // Always allow deselecting
+        : [...prevSelected, course] // Add only if no conflict
     );
   };
+  
+  
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;

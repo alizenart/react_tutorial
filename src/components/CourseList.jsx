@@ -8,9 +8,16 @@ const CourseList = ({ courses, selectedCourses, toggleSelectedCourse }) => {
     return <div>No courses available</div>;
   }
 
-  const isConflicting = (course) => {
-    return selectedCourses.some(selectedCourse => hasConflict(course, selectedCourse));
-  };
+  const isSelected = (course) =>
+    selectedCourses.includes(`${course.number}-${course.term}`);
+
+  const isConflicting = (course) =>
+    selectedCourses
+      .map(selectedId =>
+        courses.find(c => `${c.number}-${c.term}` === selectedId)
+      )
+      .some(selectedCourse => hasConflict(course, selectedCourse));
+
   
 
   return (
@@ -19,13 +26,13 @@ const CourseList = ({ courses, selectedCourses, toggleSelectedCourse }) => {
         const conflict = isConflicting(courseInfo);
         return (
           <Course
-            key={`${courseInfo.number}-${courseInfo.term}`}
-            course={courseInfo}
-            isSelected={selectedCourses.includes(courseInfo)}
-            isConflicting={!selectedCourses.includes(courseInfo) && isConflicting(courseInfo)} // Mark only if not selected
-            toggleSelectedCourse={() => toggleSelectedCourse(courseInfo)}
-          />
-
+          key={`${courseInfo.number}-${courseInfo.term}`}
+          course={courseInfo}
+          isSelected={isSelected(courseInfo)}
+          isConflicting={!isSelected(courseInfo) && isConflicting(courseInfo)}
+          toggleSelectedCourse={() => toggleSelectedCourse(courseInfo)}
+        />
+        
         );
       })}
     </div>

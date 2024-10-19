@@ -22,12 +22,14 @@ const App = () => {
   const closeModal = () => setOpen(false);
 
   const toggleSelectedCourse = (course) => {
+    const courseId = `${course.number}-${course.term}`;
     setSelectedCourses((prevSelected) =>
-      prevSelected.includes(course)
-        ? prevSelected.filter((c) => c !== course)
-        : [...prevSelected, course]
+      prevSelected.includes(courseId)
+        ? prevSelected.filter((id) => id !== courseId)
+        : [...prevSelected, courseId]
     );
   };
+  
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -39,7 +41,7 @@ const App = () => {
   const selectedCourseObjects = filteredCourses.filter((course) =>
     selectedCourses.includes(`${course.number}-${course.term}`)
   );
-
+    
   return (
     <Router>
       <div className="App">

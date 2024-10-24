@@ -8,12 +8,10 @@ import Cart from './components/Cart';
 import Modal from './components/Modal';
 import Chooser from './components/Chooser';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useJsonQuery } from './utilities/fetch';
+import { useDbData } from './utilities/firebase'; // Import Firebase hook
 
 const App = () => {
-  const [schedule, isLoading, error] = useJsonQuery(
-    'https://courses.cs.northwestern.edu/394/guides/data/cs-courses.php'
-  );
+  const [schedule, error] = useDbData('coursesData'); // Fetch data from Firebase
   const [selectedTerm, setSelectedTerm] = useState('Fall');
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [open, setOpen] = useState(false);
@@ -29,23 +27,22 @@ const App = () => {
         : [...prevSelected, courseId]
     );
   };
-  
 
-  if (isLoading) return <div>Loading...</div>;
+  if (!schedule) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
-  const filteredCourses = schedule?.courses
+  const filteredCourses = schedule.courses
     ? Object.values(schedule.courses).filter((course) => course.term === selectedTerm)
     : [];
 
   const selectedCourseObjects = filteredCourses.filter((course) =>
     selectedCourses.includes(`${course.number}-${course.term}`)
   );
-    
+
   return (
     <Router>
       <div className="App">
-        <Banner title={schedule?.title || 'Course Schedule'} />
+        <Banner title={schedule.title || 'Course Schedule'} />
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <div className="container-fluid">
             <Link className="navbar-brand" to="/">Home</Link>
@@ -54,10 +51,8 @@ const App = () => {
         </nav>
 
         <Routes>
-          {/* Redirect from root to /courses */}
           <Route path="/" element={<Navigate to="/courses" />} />
 
-          {/* Course List View */}
           <Route
             path="/courses"
             element={
@@ -80,10 +75,6 @@ const App = () => {
             }
           />
 
-          
-          
-
-          {/* Cart View */}
           <Route
             path="/cart"
             element={
@@ -97,7 +88,6 @@ const App = () => {
             path="/courses/:number/:term/edit"
             element={<CourseForm courses={filteredCourses} />}
           />
-
         </Routes>
       </div>
     </Router>

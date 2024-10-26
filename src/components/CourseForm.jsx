@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFormData } from './useFormData';
-
+import { useDbUpdate } from '../utilities/firebase'
 
 // InputField Component
 const InputField = ({ name, text, state, change }) => (
@@ -42,14 +42,18 @@ const CourseForm = ({ courses }) => {
   };
 
   const [state, change] = useFormData(validateCourseData, course || {});
+  const coursePath = `coursesData/courses/${course.number}-${course.term}`;
+  const [updateData, updateResult] = useDbUpdate(coursePath); // Use Firebase update
+
 
   const handleCancel = () => navigate('/courses');
 
   const onSubmit = (evt) => {
     evt.preventDefault();
-    if (!state.hasError) {
-      // Submit logic here (if needed)
+    if (!state.hasError && JSON.stringify(state.values) !== JSON.stringify(course)) {
+      updateData(state.values); // Update Firebase
       console.log('Form submitted:', state.values);
+      navigate('/courses'); // Redirect on success
     }
   };
 
@@ -65,8 +69,12 @@ const CourseForm = ({ courses }) => {
           Cancel
         </button>
       </div>
+      {updateResult?.error && (
+        <div className="alert alert-danger mt-3">{updateResult.message}</div>
+      )}
     </form>
   );
 };
+
 
 export default CourseForm;

@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, onValue, update } from 'firebase/database';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 
 // Firebase configuration
 const firebaseConfig = {
@@ -17,6 +18,33 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+
+export const signInWithGoogle = () => {
+  signInWithPopup(auth, provider)
+    .then((result) => {
+      console.log('User signed in:', result.user);
+    })
+    .catch((error) => {
+      console.error('Error signing in with Google:', error);
+    });
+};
+
+// Sign out function
+export const firebaseSignOut = () => signOut(auth);
+
+// Custom hook to track auth state
+export const useAuthState = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => setUser(user));
+    return () => unsubscribe(); // Cleanup listener on unmount
+  }, []);
+
+  return [user];
+};
 
 // Hook to read data from Firebase
 export const useDbData = (path) => {

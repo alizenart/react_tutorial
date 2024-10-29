@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './Course.css';
 
-const Course = ({ course, isSelected, isConflicting, toggleSelectedCourse }) => (
+const Course = ({ course, isSelected, isConflicting, toggleSelectedCourse, user }) => (
   <div
     className={`card m-3 ${isSelected ? 'selected' : ''} ${isConflicting ? 'conflict' : ''}`}
     style={{ width: '18rem', opacity: isConflicting ? 0.5 : 1 }}
@@ -13,11 +13,13 @@ const Course = ({ course, isSelected, isConflicting, toggleSelectedCourse }) => 
       <p className="card-subtitle mb-2 text-muted">{course.term} {course.number}</p>
       <p className="card-text">{course.meets}</p>
       {isConflicting && <p className="conflict-warning">Time Conflict</p>}
-      <Link to={`/courses/${course.number}/${course.term}/edit`} className="btn btn-primary">
-        Edit
-      </Link>
-
-
+      
+      {/* Conditionally render the Edit button only if the user is authenticated */}
+      {user && (
+        <Link to={`/courses/${course.number}/${course.term}/edit`} className="btn btn-primary">
+          Edit
+        </Link>
+      )}
     </div>
   </div>
 );

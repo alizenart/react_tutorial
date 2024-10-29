@@ -2,8 +2,11 @@ import React from 'react';
 import Course from './Course.jsx';
 import './CourseList.css';
 import { hasConflict } from '../utilities/timeUtils';
+import { useAuthState } from '../utilities/firebase'; // Import the auth hook
 
 const CourseList = ({ courses, selectedCourses, toggleSelectedCourse }) => {
+  const [user] = useAuthState(); // Get the authenticated user
+
   if (!courses || courses.length === 0) {
     return <div>No courses available</div>;
   }
@@ -18,21 +21,19 @@ const CourseList = ({ courses, selectedCourses, toggleSelectedCourse }) => {
       )
       .some(selectedCourse => hasConflict(course, selectedCourse));
 
-  
-
   return (
     <div className="course-list">
       {courses.map((courseInfo) => {
         const conflict = isConflicting(courseInfo);
         return (
           <Course
-          key={`${courseInfo.number}-${courseInfo.term}`}
-          course={courseInfo}
-          isSelected={isSelected(courseInfo)}
-          isConflicting={!isSelected(courseInfo) && isConflicting(courseInfo)}
-          toggleSelectedCourse={() => toggleSelectedCourse(courseInfo)}
-        />
-        
+            key={`${courseInfo.number}-${courseInfo.term}`}
+            course={courseInfo}
+            isSelected={isSelected(courseInfo)}
+            isConflicting={!isSelected(courseInfo) && conflict}
+            toggleSelectedCourse={() => toggleSelectedCourse(courseInfo)}
+            user={user} // Pass the user prop
+          />
         );
       })}
     </div>

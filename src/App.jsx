@@ -9,13 +9,24 @@ import Modal from './components/Modal';
 import Chooser from './components/Chooser';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useDbData } from './utilities/firebase'; // Import Firebase hook
+import { useAuthState, signInWithGoogle, firebaseSignOut } from './utilities/firebase'; 
 
 const App = () => {
   const [schedule, error] = useDbData('coursesData'); // Fetch data from Firebase
   const [selectedTerm, setSelectedTerm] = useState('Fall');
   const [selectedCourses, setSelectedCourses] = useState([]);
   const [open, setOpen] = useState(false);
+  const [user] = useAuthState(); 
 
+  const handleSignIn = async () => {
+    try {
+      await signInWithGoogle(); // Sign in with Google
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
+  };
+
+  const handleLogout = () => firebaseSignOut();
   const openModal = () => setOpen(true);
   const closeModal = () => setOpen(false);
 
@@ -47,6 +58,18 @@ const App = () => {
           <div className="container-fluid">
             <Link className="navbar-brand" to="/">Home</Link>
             <Link className="nav-link" to="/cart">Cart</Link>
+            {user ? (
+              <>
+                <button className="btn btn-outline-dark" onClick={handleLogout}>
+                  Sign Out
+                </button>
+                <p>Welcome, {user.email}</p>
+              </>
+            ) : (
+              <button className="btn btn-outline-dark" onClick={handleSignIn}>
+                Sign In
+              </button>
+            )}
           </div>
         </nav>
 
@@ -88,6 +111,13 @@ const App = () => {
             path="/courses/:number/:term/edit"
             element={<CourseForm courses={filteredCourses} />}
           />
+
+          {user && (
+            <Route
+              path="/courses/:number/:term/edit"
+              element={<CourseForm courses={filteredCourses} />}
+            />
+          )}
         </Routes>
       </div>
     </Router>

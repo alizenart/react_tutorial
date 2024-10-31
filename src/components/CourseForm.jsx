@@ -1,8 +1,11 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useFormData } from './useFormData';
-import { useDbUpdate } from '../utilities/firebase'
+import { useDbUpdatem, useProfile } from '../utilities/firebase'
+
+
 
 // InputField Component
+const [{ user, isAdmin }, isLoading, error] = useProfile()
 const InputField = ({ name, text, state, change }) => (
   <div className="mb-3">
     <label htmlFor={name} className="form-label">{text}</label>
@@ -12,6 +15,7 @@ const InputField = ({ name, text, state, change }) => (
       name={name}
       value={state.values[name] || ''}
       onChange={change}
+      disabled= {!isAdmin}
       required
     />
     <div className="invalid-feedback">{state.errors[name]}</div>
@@ -62,7 +66,7 @@ const CourseForm = ({ courses }) => {
   return (
     <form onSubmit={onSubmit} noValidate>
       <InputField name="title" text="Course Title" state={state} change={change} />
-      <InputField name="meets" text="Meeting Times" state={state} change={change} />
+      <InputField name="meets" text="Meeting Times" state={state} change={change} disabled={!isAdmin} />
       <div className="d-flex">
         <button type="submit" className="btn btn-primary me-2">Submit</button>
         <button type="button" className="btn btn-outline-dark" onClick={handleCancel}>
